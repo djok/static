@@ -1,0 +1,308 @@
+openapi: 3.0.3
+info:
+  title: UISP CRM Tickets API
+  version: "1.0"
+servers:
+  - url: https://uisp.fiber.bg/crm/api/v1.0
+paths:
+  /ticketing/tickets:
+    get:
+      summary: Retrieve collection of Tickets
+      description: Retrieve collection of **Tickets**.
+      parameters:
+        - name: clientId
+          in: query
+          description: 'ID of a **Client** to filter by. Use string "null" to filter tickets with unassigned **Client**.'
+          required: false
+          schema:
+            oneOf:
+              - type: number
+              - type: string
+        - name: assignedUserId
+          in: query
+          description: 'ID of a **User** to filter by. Use string "null" to filter tickets with unassigned **User**.'
+          required: false
+          schema:
+            oneOf:
+              - type: number
+              - type: string
+        - name: assignedGroupId
+          in: query
+          description: 'ID of a **TicketGroup** to filter by. Use string "null" to filter tickets with unassigned **TicketGroup**.'
+          required: false
+          schema:
+            oneOf:
+              - type: number
+              - type: string
+        - name: dateFrom
+          in: query
+          description: "Limit collection from date (including). Use `YYYY-MM-DD` format."
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: "Limit collection to date (including). Use `YYYY-MM-DD` format."
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: statuses[]
+          in: query
+          description: "Filter by ticket status."
+          required: false
+          schema:
+            type: string
+            enum: [TicketStatus]
+        - name: public
+          in: query
+          description: "Filter public ticket."
+          required: false
+          schema:
+            type: number
+        - name: query
+          in: query
+          description: "A search query of at least two characters."
+          required: false
+          schema:
+            type: string
+        - name: ticketTagIds[]
+          in: query
+          description: "Filter by ticket tags."
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: "Result limit."
+          required: false
+          schema:
+            type: number
+        - name: offset
+          in: query
+          description: "Index of first result."
+          required: false
+          schema:
+            type: number
+        - name: order
+          in: query
+          description: "By what property is result ordered by."
+          required: false
+          schema:
+            type: string
+            enum: [createdAt, id, lastActivity]
+            default: createdAt
+        - name: direction
+          in: query
+          description: "Ordering direction."
+          required: false
+          schema:
+            type: string
+            enum: [ASC, DESC]
+            default: ASC
+      responses:
+        "200":
+          description: Successful response with an array of TicketReadOnly objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketReadOnly'
+        "404":
+          description: Not Found - Error404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      tags:
+        - Tickets
+    post:
+      summary: Create a new ticket
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Successful response with the created Ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketReadOnly'
+        "404":
+          description: Not Found - Error404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      tags:
+        - Tickets
+  /ticketing/tickets/{id}:
+    get:
+      summary: Retrieve a single ticket
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response with a Ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketReadOnly'
+        "404":
+          description: Not Found - Error404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      tags:
+        - Tickets
+    put:
+      summary: Update a ticket
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Successful response with the updated Ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketReadOnly'
+        "404":
+          description: Not Found - Error404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      tags:
+        - Tickets
+    patch:
+      summary: Partially update a ticket
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Successful response with the updated Ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketReadOnly'
+        "404":
+          description: Not Found - Error404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      tags:
+        - Tickets
+    delete:
+      summary: Delete a ticket
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ticket successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Not Found - Error404 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+      tags:
+        - Tickets
+components:
+  schemas:
+    TicketReadOnly:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          oneOf:
+            - type: number
+            - type: string
+        assignedUserId:
+          oneOf:
+            - type: number
+            - type: string
+        assignedGroupId:
+          oneOf:
+            - type: number
+            - type: string
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        statuses:
+          type: string
+        public:
+          type: number
+        query:
+          type: string
+        ticketTagIds:
+          type: string
+        limit:
+          type: number
+        offset:
+          type: number
+        order:
+          type: string
+          enum:
+            - createdAt
+            - id
+            - lastActivity
+        direction:
+          type: string
+          enum:
+            - ASC
+            - DESC
+    Error404:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
